@@ -1,4 +1,3 @@
-
 #!/usr/bin/python3
 """Module for calculating the minimum number of operations."""
 
