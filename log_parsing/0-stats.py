@@ -1,12 +1,11 @@
 #!/usr/bin/python3
-"""Read log lines from stdin and print cumulative statistics."""
+"""Read logs from stdin and print cumulative metrics."""
 
-import re
 import sys
 
 
 def print_stats(total_size, counts):
-    """Print total file size and status counts in ascending order."""
+    """Print total size and nonzero status counts."""
     print("File size: {}".format(total_size))
     for code in sorted(counts):
         if counts[code]:
@@ -14,33 +13,27 @@ def print_stats(total_size, counts):
 
 
 def main():
-    """Process input and report statistics every ten lines."""
+    """Process log lines and report cumulative statistics."""
     total_size = 0
     line_count = 0
     counts = {
-        200: 0, 301: 0, 400: 0, 401: 0,
-        403: 0, 404: 0, 405: 0, 500: 0
+        '200': 0, '301': 0, '400': 0, '401': 0,
+        '403': 0, '404': 0, '405': 0, '500': 0
     }
-    pattern = re.compile(
-        r'^(\d{1,3}(?:\.\d{1,3}){3}) - \[([^\]\r\n]+)\] '
-        r'"GET /projects/260 HTTP/1\.1" (\S+) (\d+)$'
-    )
 
     try:
         for line in sys.stdin:
             line_count += 1
-            match = pattern.match(line.rstrip('\n'))
+            parts = line.split()
 
-            if match:
-                ip_parts = match.group(1).split('.')
-                if all(0 <= int(part) <= 255 for part in ip_parts):
-                    total_size += int(match.group(4))
-                    try:
-                        code = int(match.group(3))
-                    except ValueError:
-                        code = None
-                    if code in counts:
-                        counts[code] += 1
+            if len(parts) >= 2:
+                try:
+                    total_size += int(parts[-1])
+                except ValueError:
+                    pass
+
+                if parts[-2] in counts:
+                    counts[parts[-2]] += 1
 
             if line_count % 10 == 0:
                 print_stats(total_size, counts)
