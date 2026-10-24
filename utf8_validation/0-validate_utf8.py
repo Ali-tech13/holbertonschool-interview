@@ -1,28 +1,28 @@
 
 #!/usr/bin/python3
-"""Module for UTF-8 validation."""
+"""UTF-8 validation module."""
 
 
 def validUTF8(data):
-    """Check if a list of integers represents valid UTF-8."""
+    """Check whether data is valid UTF-8."""
     remaining = 0
 
     for number in data:
-        byte = number & 255
+        byte = number & 0xFF
 
         if remaining == 0:
             if byte >> 7 == 0:
                 continue
-            elif byte >> 5 == 6:
+            elif byte >> 5 == 0b110:
                 remaining = 1
-            elif byte >> 4 == 14:
+            elif byte >> 4 == 0b1110:
                 remaining = 2
-            elif byte >> 3 == 30:
+            elif byte >> 3 == 0b11110:
                 remaining = 3
             else:
                 return False
         else:
-            if byte >> 6 != 2:
+            if byte >> 6 != 0b10:
                 return False
             remaining -= 1
 
