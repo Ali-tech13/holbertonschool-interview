@@ -1,4 +1,3 @@
-
 #!/usr/bin/python3
 """Solve the N Queens problem using backtracking."""
 
